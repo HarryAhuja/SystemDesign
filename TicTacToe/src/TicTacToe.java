@@ -3,12 +3,25 @@ public class TicTacToe
 {
 	// final so that reference could not be changed
 	private final int board[][];
+	private final int row_sum[],col_sum[];
+	private int 	  diag_sum,reverse_diag_sum;		// these are not final as val can be changed
 	private final int N;
+	public  int 	  winner;
+	
 	
 	public TicTacToe(final int n)
 	{
-		N     = n;
-		board = new int[n][n];
+		N       		 = n;
+		board   		 = new int[n][n];
+		row_sum 		 = new int [n];
+		col_sum 	     = new int [n];
+		diag_sum 		 = 0;
+		reverse_diag_sum = 0;
+	}
+	
+	public int get_winner()
+	{
+		return winner;
 	}
 	
 	/*
@@ -16,7 +29,7 @@ public class TicTacToe
 	 * @param player : 0 or 1
 	 * @param row : 0 to n-1
 	 * @param col : 0 to n-1
-	 * @return winner : +1 if first player, -1 if second and 0 otherwise
+	 * @return winner : -1: player 0 and +1:player 1 and 0 means otherwise
 	 * @throws IllegalArgumentException if move is illegal move
 	 */
 	
@@ -24,45 +37,29 @@ public class TicTacToe
 	{
 		if(row<0 || col<0 || row>=N || col>=N)	throw new IllegalArgumentException("Move out of the board");
 		
-		if(board[row][col]!=0)	throw new IllegalArgumentException("Cell already occupied");
+		if(board[row][col]!=0)					throw new IllegalArgumentException("Cell already occupied");
 		
-		if(player!=0 && player!=1 )	throw new IllegalArgumentException("Invalid player");
+		if(player!=0 && player!=1 )				throw new IllegalArgumentException("Invalid player");
+		
+		if(get_winner()!=0)					    throw new IllegalArgumentException("Winner is already decided");
 		
 		board[row][col] = (player==0)?-1:1;
 		
-		boolean win_row = true, win_col = true, win_diag = true, win_reverse_diag = true;
+		row_sum[row]+= board[row][col];
+		col_sum[col]+= board[row][col];
 		
-		for(int i=0;i<N;i++)
+		// Add only if its falls on diag or reverse diag
+		
+		if(row==col)		diag_sum         +=board[row][col];
+		if(row+col==N-1)	reverse_diag_sum +=board[row][col];
+		
+		// just check sum of current cell
+		if(N==Math.abs(row_sum[row]) || N==Math.abs(col_sum[col]) ||  N==Math.abs(diag_sum) || N==Math.abs(reverse_diag_sum))
 		{
-			// row
-			if(board[i][col]!=board[row][col])
-			{
-				win_row = false;
-				// dont break here bcs we are checking 4 things at a time
-				// we can break only if 4 separate for loops
-			}
-			// col
-			if(board[row][i]!=board[row][col])
-			{
-				win_col = false;
-			}
-			
-			// player can only win in diagonal if row==col
-			// diag property is row==col
-			if(board[i][i]!=board[row][col])
-			{
-				win_diag = false;
-			}
-			 
-			// rev diag property is row+col == n-1;
-			// if row = i, then col = N-1-row
-			if(board[i][N-1-i]!=board[row][col])
-			{
-				win_diag = false;
-			}
+			winner = board[row][col];
 		}
-	
 		
-		if(win_row | win_col | win_diag | win_reverse_diag)	return board[row][col];
+	
+		return winner;
 	}
 }
