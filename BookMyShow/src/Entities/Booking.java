@@ -6,6 +6,8 @@ public class Booking
 	Date   		  booking_date;
 	Member        member;
 	Show   		  show;
+	// show don't have audi, so add separately
+	// show has cinemalHall, so don't add
 	Audi   		  audi;
 	BookingStatus booking_status;
 	double		  total_amount;
