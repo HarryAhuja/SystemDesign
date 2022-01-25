@@ -13,39 +13,45 @@ package Cache.eviction;
 import java.util.HashMap;
 import java.util.Map;
 
+import Cache.algorithms.DoublyLinkedList;
+import Cache.algorithms.DoublyLinkedListNode;
+
 public class LruEvictionPolicy<Key> implements evictionPolicy<Key>
 {
 	private final DoublyLinkedList<Key> dll;
-	private final Map<Key,DoublyLinkedList<Key>> map;
+	private final Map<Key,DoublyLinkedListNode<Key>> map;
 	
-	public LruEvictionPolicy<Key>()
+	public LruEvictionPolicy()
 	{
-		dll = new DoublyLinkedList<>();
-		map = new HashMap<>();
+		dll 	 = new DoublyLinkedList<>();
+		map 	 = new HashMap<>();
 	}
 	
 	public void maintainOrder(Key key)
 	{
-		if(map.contains(key))
+		// condition should be checked here irrespective of caller checking or not
+		// bcs each class should be independently tested
+		if(map.containsKey(key))
 		{
 			dll.detachNode(map.get(key));
-			dll.addNodeAtLast(map.get(key));
+			dll.moveNodeAtLast(map.get(key));
 		}
 		else
 		{
-			DoublyLinkedList<Key> newNode = dll.addElementAtLast(key);
+			DoublyLinkedListNode<Key> newNode = dll.addNodeAtLast(key);
 			map.put(key,newNode);
 		} 
 	}
 	
 	public Key evict()
 	{
-		DoublyLinkedList<Key> firstKey = dll.getFirst();
+		DoublyLinkedListNode<Key> firstKey = dll.getFirst();
 		
 		if(firstKey==null)	return null;
 		
-		dll.detachFirst();
+		dll.detachNode(firstKey);
+		map.remove(firstKey.getKey());
 		
-		return firstKey.getElement();
+		return firstKey.getKey();
 	}
 }

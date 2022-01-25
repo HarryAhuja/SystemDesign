@@ -6,11 +6,28 @@ import Cache.exceptions.*;
 
 public class HashMapStorage<Key,Value> implements Storage<Key,Value> 
 {
-	Map<Key,Value> map = new HashMap<>();
+	final Map<Key,Value> map;
+	final int 	  capacity;
+	
+	public HashMapStorage()
+	{
+		this.capacity = 0;
+		this.map	  = new HashMap<>();
+	}
+	public HashMapStorage(int c)
+	{
+		this.capacity = c;
+		this.map	  = new HashMap<>();
+	}
+	
+	public boolean isStorageFull()
+	{
+		return (map.size()==capacity);
+	}
 	
 	public void add(Key key,Value value) throws StorageFullException
 	{
-		if(map.size()==4)
+		if(isStorageFull())
 		{
 			throw new StorageFullException("Storage is full. Evicting key");
 		}

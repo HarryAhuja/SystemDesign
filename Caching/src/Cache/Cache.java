@@ -26,10 +26,12 @@
 package Cache;
 
 import Cache.exceptions.*;
+import Cache.storage.Storage;
+import Cache.eviction.evictionPolicy;
 
 public class Cache<Key,Value>
 {
-	private final EvictionPolicy<Key> evictionPolicy;
+	private final evictionPolicy<Key> evictionPolicy;
 	private final Storage<Key,Value>  storage;
 	
 	public Cache()
@@ -41,7 +43,7 @@ public class Cache<Key,Value>
 	// Cache is extensibile and re-usable for any type of storage
 	// dependency inversion principle followed here
 	// final variables once initiliased inside constructor are immutable after that
-	public Cache(EvictionPolicy<Key> evictionPolicy,Storage<Key,Value> storage)
+	public Cache(evictionPolicy<Key> evictionPolicy,Storage<Key,Value> storage)
 	{
 		this.evictionPolicy = evictionPolicy;
 		this.storage		= storage;
@@ -56,8 +58,8 @@ public class Cache<Key,Value>
 		}
 		catch(StorageFullException e)
 		{
-			System.out.println(e.getMessage());
 			Key evictedKey = evictionPolicy.evict();
+			System.out.println(e.getMessage()+" "+evictedKey);
 			
 			if(evictedKey == null)
 			{
